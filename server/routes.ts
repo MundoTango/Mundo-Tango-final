@@ -626,20 +626,359 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ═══════════════════════════════════════════════════════════════════
-  // HEALTH CHECK
+  // PHASE 5: DEPLOYMENT & ROLLOUT ENDPOINTS
   // ═══════════════════════════════════════════════════════════════════
 
+  // Enhanced health check with comprehensive diagnostics
   app.get('/api/health', async (req: Request, res: Response) => {
-    res.json({
-      status: 'ok',
-      timestamp: new Date(),
-      websocket: io ? 'connected' : 'disconnected',
-      database: 'connected'
-    });
+    try {
+      const { healthCheckService } = await import('./deployment/health-check');
+      const healthStatus = await healthCheckService.runHealthChecks();
+      res.json(healthStatus);
+    } catch (error) {
+      res.status(500).json({
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: 'Health check failed'
+      });
+    }
+  });
+
+  // Feature flags - Get flags for user
+  app.get('/api/deployment/feature-flags/:userId', async (req: Request, res: Response) => {
+    try {
+      const { featureFlagService } = await import('./deployment/feature-flags');
+      const { userId } = req.params;
+      const flags = await featureFlagService.getFlagsForUser(userId);
+      res.json(flags);
+    } catch (error) {
+      console.error('[API] Error fetching feature flags:', error);
+      res.status(500).json({ error: 'Failed to fetch feature flags' });
+    }
+  });
+
+  // Feature flags - Check specific feature
+  app.get('/api/deployment/feature-flags/:userId/:feature', async (req: Request, res: Response) => {
+    try {
+      const { featureFlagService } = await import('./deployment/feature-flags');
+      const { userId, feature } = req.params;
+      const enabled = await featureFlagService.isFeatureEnabled(userId, feature as any);
+      res.json({ enabled });
+    } catch (error) {
+      console.error('[API] Error checking feature flag:', error);
+      res.status(500).json({ error: 'Failed to check feature flag' });
+    }
+  });
+
+  // Metrics - Get current system metrics
+  app.get('/api/deployment/metrics', async (req: Request, res: Response) => {
+    try {
+      const { metricsCollector } = await import('./deployment/metrics-collector');
+      const metrics = await metricsCollector.collectMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error('[API] Error collecting metrics:', error);
+      res.status(500).json({ error: 'Failed to collect metrics' });
+    }
+  });
+
+  // Metrics - Check deployment thresholds
+  app.get('/api/deployment/metrics/thresholds', async (req: Request, res: Response) => {
+    try {
+      const { metricsCollector } = await import('./deployment/metrics-collector');
+      const thresholds = await metricsCollector.checkDeploymentThresholds();
+      res.json(thresholds);
+    } catch (error) {
+      console.error('[API] Error checking thresholds:', error);
+      res.status(500).json({ error: 'Failed to check thresholds' });
+    }
+  });
+
+  // Rollback - Check rollback conditions
+  app.get('/api/deployment/rollback/status', async (req: Request, res: Response) => {
+    try {
+      const { rollbackCoordinator } = await import('./deployment/rollback-coordinator');
+      const decision = await rollbackCoordinator.checkRollbackConditions();
+      res.json(decision);
+    } catch (error) {
+      console.error('[API] Error checking rollback conditions:', error);
+      res.status(500).json({ error: 'Failed to check rollback conditions' });
+    }
+  });
+
+  // Rollback - Manual trigger
+  app.post('/api/deployment/rollback', async (req: Request, res: Response) => {
+    try {
+      const { rollbackCoordinator } = await import('./deployment/rollback-coordinator');
+      const { reason } = req.body;
+      await rollbackCoordinator.manualRollback(reason || 'Manual rollback requested');
+      res.json({ success: true, message: 'Rollback initiated' });
+    } catch (error) {
+      console.error('[API] Error initiating rollback:', error);
+      res.status(500).json({ error: 'Failed to initiate rollback' });
+    }
+  });
+
+  // Alerts - Get active alerts
+  app.get('/api/deployment/alerts', async (req: Request, res: Response) => {
+    try {
+      const { alertManager } = await import('./deployment/alert-manager');
+      const alerts = alertManager.getActiveAlerts();
+      res.json(alerts);
+    } catch (error) {
+      console.error('[API] Error fetching alerts:', error);
+      res.status(500).json({ error: 'Failed to fetch alerts' });
+    }
+  });
+
+  // Alerts - Get summary
+  app.get('/api/deployment/alerts/summary', async (req: Request, res: Response) => {
+    try {
+      const { alertManager } = await import('./deployment/alert-manager');
+      const summary = alertManager.getSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error('[API] Error fetching alert summary:', error);
+      res.status(500).json({ error: 'Failed to fetch alert summary' });
+    }
+  });
+
+  // Alerts - Acknowledge alert
+  app.post('/api/deployment/alerts/:alertId/acknowledge', async (req: Request, res: Response) => {
+    try {
+      const { alertManager } = await import('./deployment/alert-manager');
+      const { alertId } = req.params;
+      const success = alertManager.acknowledgeAlert(alertId);
+      res.json({ success });
+    } catch (error) {
+      console.error('[API] Error acknowledging alert:', error);
+      res.status(500).json({ error: 'Failed to acknowledge alert' });
+    }
+  });
+
+  // Deployment Safety - Run pre-flight checks
+  app.get('/api/deployment/safety/preflight', async (req: Request, res: Response) => {
+    try {
+      const { deploymentSafety } = await import('./deployment/deployment-safety');
+      const readiness = await deploymentSafety.runPreFlightChecks();
+      res.json(readiness);
+    } catch (error) {
+      console.error('[API] Error running pre-flight checks:', error);
+      res.status(500).json({ error: 'Failed to run pre-flight checks' });
+    }
+  });
+
+  // Deployment Safety - Get report
+  app.get('/api/deployment/safety/report', async (req: Request, res: Response) => {
+    try {
+      const { deploymentSafety } = await import('./deployment/deployment-safety');
+      const report = await deploymentSafety.generateReport();
+      res.set('Content-Type', 'text/plain');
+      res.send(report);
+    } catch (error) {
+      console.error('[API] Error generating deployment report:', error);
+      res.status(500).json({ error: 'Failed to generate deployment report' });
+    }
+  });
+
+  // User Segmentation - Get user segment
+  app.get('/api/deployment/segmentation/:userId', async (req: Request, res: Response) => {
+    try {
+      const { userSegmentation } = await import('./deployment/user-segmentation');
+      const { userId } = req.params;
+      const segment = userSegmentation.getUserSegment(userId);
+      res.json({ userId, segment });
+    } catch (error) {
+      console.error('[API] Error getting user segment:', error);
+      res.status(500).json({ error: 'Failed to get user segment' });
+    }
+  });
+
+  // User Segmentation - Promote to beta
+  app.post('/api/deployment/segmentation/:userId/promote-beta', async (req: Request, res: Response) => {
+    try {
+      const { userSegmentation } = await import('./deployment/user-segmentation');
+      const { userId } = req.params;
+      const result = userSegmentation.promoteToBeta(userId);
+      res.json(result);
+    } catch (error) {
+      console.error('[API] Error promoting user to beta:', error);
+      res.status(500).json({ error: 'Failed to promote user to beta' });
+    }
+  });
+
+  // User Segmentation - Get rollout stats
+  app.get('/api/deployment/segmentation/stats', async (req: Request, res: Response) => {
+    try {
+      const { userSegmentation } = await import('./deployment/user-segmentation');
+      const stats = userSegmentation.getRolloutStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('[API] Error getting rollout stats:', error);
+      res.status(500).json({ error: 'Failed to get rollout stats' });
+    }
+  });
+
+  // Performance Analysis - Run analysis
+  app.get('/api/deployment/performance/analyze', async (req: Request, res: Response) => {
+    try {
+      const { performanceAnalyzer } = await import('./deployment/performance-analyzer');
+      const report = await performanceAnalyzer.analyzePerformance();
+      res.json(report);
+    } catch (error) {
+      console.error('[API] Error analyzing performance:', error);
+      res.status(500).json({ error: 'Failed to analyze performance' });
+    }
+  });
+
+  // Performance Analysis - Get text report
+  app.get('/api/deployment/performance/report', async (req: Request, res: Response) => {
+    try {
+      const { performanceAnalyzer } = await import('./deployment/performance-analyzer');
+      const report = await performanceAnalyzer.generateTextReport();
+      res.set('Content-Type', 'text/plain');
+      res.send(report);
+    } catch (error) {
+      console.error('[API] Error generating performance report:', error);
+      res.status(500).json({ error: 'Failed to generate performance report' });
+    }
+  });
+
+  // Grafana Dashboards - Export all dashboards
+  app.get('/api/deployment/grafana/dashboards', async (req: Request, res: Response) => {
+    try {
+      const { exportDashboardsForGrafana } = await import('./deployment/grafana-dashboards');
+      const dashboards = exportDashboardsForGrafana();
+      res.json(dashboards);
+    } catch (error) {
+      console.error('[API] Error exporting Grafana dashboards:', error);
+      res.status(500).json({ error: 'Failed to export Grafana dashboards' });
+    }
+  });
+
+  // Grafana Dashboards - Generate config for specific dashboard
+  app.get('/api/deployment/grafana/dashboards/:name/config', async (req: Request, res: Response) => {
+    try {
+      const { exportDashboardsForGrafana, generateGrafanaConfig } = await import('./deployment/grafana-dashboards');
+      const dashboards = exportDashboardsForGrafana();
+      const dashboard = dashboards[req.params.name as keyof typeof dashboards];
+      
+      if (!dashboard) {
+        return res.status(404).json({ error: 'Dashboard not found' });
+      }
+
+      const config = generateGrafanaConfig(dashboard);
+      res.set('Content-Type', 'application/json');
+      res.send(config);
+    } catch (error) {
+      console.error('[API] Error generating Grafana config:', error);
+      res.status(500).json({ error: 'Failed to generate Grafana config' });
+    }
+  });
+
+  // Database Migration - Execute migration
+  app.post('/api/deployment/migration/execute', async (req: Request, res: Response) => {
+    try {
+      const { dbMigrationService } = await import('./deployment/database-migration');
+      const { name, sql } = req.body;
+      const result = await dbMigrationService.executeMigration(name, sql);
+      res.json(result);
+    } catch (error) {
+      console.error('[API] Error executing migration:', error);
+      res.status(500).json({ error: 'Failed to execute migration' });
+    }
+  });
+
+  // Database Migration - Get history
+  app.get('/api/deployment/migration/history', async (req: Request, res: Response) => {
+    try {
+      const { dbMigrationService } = await import('./deployment/database-migration');
+      const history = dbMigrationService.getMigrationHistory();
+      res.json(history);
+    } catch (error) {
+      console.error('[API] Error getting migration history:', error);
+      res.status(500).json({ error: 'Failed to get migration history' });
+    }
+  });
+
+  // Environment Config - Get current config
+  app.get('/api/deployment/env/config', async (req: Request, res: Response) => {
+    try {
+      const { envConfig } = await import('./deployment/env-config');
+      const config = envConfig.getConfig();
+      res.json(config);
+    } catch (error) {
+      console.error('[API] Error getting environment config:', error);
+      res.status(500).json({ error: 'Failed to get environment config' });
+    }
+  });
+
+  // Environment Config - Get summary
+  app.get('/api/deployment/env/summary', async (req: Request, res: Response) => {
+    try {
+      const { envConfig } = await import('./deployment/env-config');
+      const summary = envConfig.getSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error('[API] Error getting environment summary:', error);
+      res.status(500).json({ error: 'Failed to get environment summary' });
+    }
+  });
+
+  // Notifications - Get user notifications
+  app.get('/api/deployment/notifications/:userId', async (req: Request, res: Response) => {
+    try {
+      const { notificationService } = await import('./deployment/notification-service');
+      const { userId } = req.params;
+      const notifications = notificationService.getUserNotifications(userId);
+      res.json(notifications);
+    } catch (error) {
+      console.error('[API] Error getting notifications:', error);
+      res.status(500).json({ error: 'Failed to get notifications' });
+    }
+  });
+
+  // Notifications - Mark as read
+  app.post('/api/deployment/notifications/:notificationId/read', async (req: Request, res: Response) => {
+    try {
+      const { notificationService } = await import('./deployment/notification-service');
+      const { notificationId } = req.params;
+      const success = notificationService.markAsRead(notificationId);
+      res.json({ success });
+    } catch (error) {
+      console.error('[API] Error marking notification as read:', error);
+      res.status(500).json({ error: 'Failed to mark notification as read' });
+    }
+  });
+
+  // Deployment Automation - Execute deployment
+  app.post('/api/deployment/automation/deploy', async (req: Request, res: Response) => {
+    try {
+      const { deploymentAutomation } = await import('./deployment/deployment-automation');
+      const { version } = req.body;
+      const result = await deploymentAutomation.deploy(version || '1.0.0');
+      res.json(result);
+    } catch (error) {
+      console.error('[API] Error executing deployment:', error);
+      res.status(500).json({ error: 'Failed to execute deployment' });
+    }
+  });
+
+  // Deployment Automation - Get history
+  app.get('/api/deployment/automation/history', async (req: Request, res: Response) => {
+    try {
+      const { deploymentAutomation } = await import('./deployment/deployment-automation');
+      const history = deploymentAutomation.getDeploymentHistory();
+      res.json(history);
+    } catch (error) {
+      console.error('[API] Error getting deployment history:', error);
+      res.status(500).json({ error: 'Failed to get deployment history' });
+    }
   });
 
   console.log('[Server] All agent API routes registered');
   console.log('[WebSocket] Real-time communication server initialized');
+  console.log('[Deployment] Phase 5 deployment endpoints registered (26 endpoints)');
 
   return httpServer;
 }

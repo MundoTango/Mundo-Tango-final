@@ -4,11 +4,12 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from "@/components/ui/sidebar";
-import { Activity, ListTodo, BarChart3 } from "lucide-react";
+import { Activity, ListTodo, BarChart3, Rocket } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import AgentDashboard from "@/pages/AgentDashboard";
 import TaskMonitor from "@/pages/TaskMonitor";
 import Analytics from "@/pages/Analytics";
+import DeploymentDashboard from "@/pages/DeploymentDashboard";
 import NotFound from "@/pages/not-found";
 
 const menuItems = [
@@ -26,6 +27,11 @@ const menuItems = [
     title: "Analytics",
     url: "/analytics",
     icon: BarChart3,
+  },
+  {
+    title: "Deployment",
+    url: "/deployment",
+    icon: Rocket,
   },
 ];
 
@@ -63,6 +69,7 @@ function Router() {
       <Route path="/" component={AgentDashboard} />
       <Route path="/tasks" component={TaskMonitor} />
       <Route path="/analytics" component={Analytics} />
+      <Route path="/deployment" component={DeploymentDashboard} />
       <Route component={NotFound} />
     </Switch>
   );
