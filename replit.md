@@ -1,267 +1,117 @@
 # Mundo Tango - Multi-Agent AI Orchestration Platform
 
-**Status:** In Development  
-**Main Protocol:** `mb.md` (Mr Blue)  
-**Architecture:** ESA (Emergent Software Architecture) LIFE CEO Framework
-
-## 🔵 Mr Blue - The AI Being Created
-
-**IMPORTANT: Remember this for all future sessions:**
-
-- **Mr Blue** = The AI orchestration system we are building (defined in `mb.md`)
-- **mb.md** = The master blueprint/protocol for Mr Blue (3,095 lines)
-- When the user references "Mr Blue" or "mb.md", they mean the AI system being created
-- All implementation must follow Mr Blue's protocols documented in `mb.md`
-
-### Mr Blue Protocols for Replit to Follow:
-
-1. **Always reference mb.md** as the single source of truth
-2. **Multi-agent orchestration** - 112 agents working simultaneously across all phases
-3. **Parallel development tracks** - Backend, Frontend, Testing, Deployment in parallel
-4. **Logical phasing** - Backend → Orchestration → Frontend → Testing → Deployment
-5. **Cost optimization** - Multi-model AI routing (87% cost reduction via Gemini/Claude/GPT-4o)
-6. **Quality gates** - 800+ checkpoints (40 domains × 20 phases)
-7. **Self-healing** - Agents fix their own errors (max 3 attempts before human escalation)
-8. **Evidence-based** - All work includes screenshots, test results, performance metrics
-
 ## Overview
 
-Mundo Tango is a sophisticated multi-agent AI orchestration platform featuring 105+ specialized AI agents organized in a hierarchical structure to manage complex software development and business operations. **This platform IS Mr Blue.**
+Mundo Tango (Mr Blue) is a sophisticated multi-agent AI orchestration platform designed to manage complex software development and business operations. It features 112 specialized AI agents organized in a hierarchical structure, following the ESA (Emergent Software Architecture) LIFE CEO Framework. The platform aims to streamline development, optimize costs (targeting 87% reduction through multi-model AI routing), and provide real-time monitoring of agent activities and task progression.
 
-## Primary Reference Document
+## User Preferences
 
-**📘 mb.md** - This is our master blueprint and main protocol for building the entire platform. All architectural decisions, agent specifications, database schemas, and implementation details are documented in `mb.md`.
+- **Mr Blue** = The AI orchestration system we are building (defined in `mb.md`)
+- **mb.md** = The master blueprint/protocol for Mr Blue
+- When the user references "Mr Blue" or "mb.md", they mean the AI system being created
+- All implementation must follow Mr Blue's protocols documented in `mb.md`
+- **Always reference mb.md** as the single source of truth
+- **Multi-agent orchestration** - 112 agents working simultaneously across all phases
+- **Parallel development tracks** - Backend, Frontend, Testing, Deployment in parallel
+- **Logical phasing** - Backend → Orchestration → Frontend → Testing → Deployment
+- **Cost optimization** - Multi-model AI routing
+- **Quality gates** - 800+ checkpoints (40 domains × 20 phases)
+- **Self-healing** - Agents fix their own errors (max 3 attempts before human escalation)
+- **Evidence-based** - All work includes screenshots, test results, performance metrics
 
-**Always refer to mb.md for:**
-- Agent ecosystem architecture (105+ agents)
-- Agent organizational structure (CEO → Chiefs → Coordinators → Layers)
-- Database schemas and API specifications
-- Multi-agent orchestration system
-- Agent communication protocols
-- Multi-model AI routing (Claude, GPT-4o, Gemini)
-- Cost optimization strategies (87% reduction)
-- Agent learning & memory systems
-- Autonomous coding system (Agent #131)
-- All specialized agent implementations
+## System Architecture
 
-## Current Build Phase
+Mundo Tango's architecture is guided by the `mb.md` blueprint, detailing a hierarchical multi-agent ecosystem.
 
-**✅ Phase 1: Backend Infrastructure COMPLETED**
-- ✅ PostgreSQL database schemas for agent management (11 tables)
-- ✅ API endpoints for agent orchestration (25+ endpoints)
-- ✅ WebSocket server for real-time communication
-- ✅ Storage layer for agent capabilities, tasks, and collaboration
+**UI/UX Decisions:**
+The frontend adopts a "mission-control" aesthetic with a dark theme, utilizing Shadcn UI components and Tailwind CSS for a technical and responsive design. Key dashboards provide real-time visualization of agents, tasks, and analytics.
+
+**Technical Implementations & Feature Specifications:**
+
+*   **Multi-Agent Orchestration:**
+    *   112 specialized agents across 61 layers, organized hierarchically (CEO, Chiefs, Coordinators, Layer Agents).
+    *   Task decomposition using GPT-4o, intelligent agent assignment based on capacity and specialties, parallel execution, and dependency management.
+    *   Agent Intelligence Levels: From Rule-Based to Self-Aware (Level 6 for Agent #0).
+*   **Cost Optimization:**
+    *   Multi-model AI routing (Claude 3.5 Sonnet, GPT-4o, Gemini 2.5 Pro/Flash) for an 87% cost reduction target.
+    *   Strict availability filtering, budget-aware model selection, and real-time cost tracking.
+*   **Real-time Communication:**
+    *   WebSocket server for real-time updates on agent status, task notifications, and collaboration messages.
+    *   Priority-based messaging for inter-agent communication.
+*   **Database Design:**
+    *   PostgreSQL serves as the persistent storage, with 11 core tables managing agent capabilities, tasks, collaboration, performance metrics, learning data, predictions, errors, and AI usage tracking.
+*   **API Endpoints:**
+    *   A comprehensive set of 32+ REST API endpoints for agent management, task management, collaboration, learning/metrics, ML/predictions, error tracking, AI usage, and orchestration (decompose, assign, execute).
+*   **Frontend Dashboards:**
+    *   **Agent Dashboard:** Displays 112 agents with real-time status, stats (active agents, success rate, completed tasks), and detailed agent cards.
+    *   **Task Monitor:** Provides a live feed of tasks with status, priority, assigned agent, and timestamps.
+    *   **Analytics Dashboard:** Shows cost optimization metrics (savings, actual vs. baseline cost), model usage distribution, and request volumes.
+*   **Testing & Quality Assurance:**
+    *   Comprehensive E2E tests using Playwright for UI validation, navigation, and real-time update verification.
+
+**System Design Choices:**
+
+*   **Node.js + Express backend** with TypeScript for type safety.
+*   **React + TypeScript + Wouter frontend** for a dynamic user interface.
+*   **Tailwind CSS + Shadcn UI** for consistent styling.
+*   **PostgreSQL (Neon)** for robust data storage.
+*   **WebSocket** for full-duplex, real-time communication.
+*   **Multi-model AI routing** ensures efficiency and cost-effectiveness.
+
+## External Dependencies
+
+*   **Database:** PostgreSQL (specifically Neon for persistent storage)
+*   **AI Models:**
+    *   Claude 3.5 Sonnet (for complex reasoning)
+    *   GPT-4o (for multimodal tasks and task decomposition)
+    *   Gemini 2.5 Pro/Flash (for code generation and cost optimization)
+*   **Frontend Libraries/Frameworks:**
+    *   React
+    *   Wouter (for routing)
+    *   Tailwind CSS
+    *   Shadcn UI
+    *   TanStack Query
+*   **Testing Framework:** Playwright (for End-to-End testing)
+*   **Environment Variables (Required Secrets):**
+    *   `DATABASE_URL`
+    *   `SESSION_SECRET`
+    *   `AI_INTEGRATIONS_OPENAI_BASE_URL`
+    *   `AI_INTEGRATIONS_OPENAI_API_KEY`
+
+## Current Build Status
+
+**✅ Phase 1: Backend Infrastructure (COMPLETED)**
+- ✅ PostgreSQL database schemas (11 tables)
+- ✅ API endpoints (32+)
+- ✅ WebSocket server
 - ✅ Database seeded with 112 agents
-- ✅ Comprehensive validation with Zod schemas
-- ✅ All endpoints tested and verified
 
-**📋 MASTER IMPLEMENTATION PLAN CREATED**
-- ✅ **MR_BLUE_MASTER_PLAN.md** - Complete implementation plan (all phases)
-- 📌 Shows how 112 agents work simultaneously across 6 phases
-- 📌 Covers: Orchestration → Frontend → Testing → Deployment → Roadmap Q1-Q3 2026
-- 📌 Implementation-ready specifications with code examples, file paths, exact tasks
-- 📌 Evidence-based: All work includes screenshots, test results, performance metrics
+**✅ Phase 2: Multi-Agent Orchestration System (COMPLETED)**
+- ✅ Task Orchestration Engine
+- ✅ Multi-Model AI Router (strict availability filtering)
+- ✅ Agent Communication Protocol
+- ✅ Orchestration API endpoints
 
-**⏳ Phase 2-6: Ready to Execute**
-- Phase 2: Multi-Agent Orchestration System (3-4 weeks, 12 agents)
-- Phase 3: Frontend Dashboard (3-4 weeks, 15 agents)
-- Phase 4: Testing & Quality Assurance (2 weeks, 15 agents)
-- Phase 5: Deployment & Rollout (4-5 weeks, 13 agents)
-- Phase 6: Future Roadmap Q1-Q3 2026 (9 months)
+**✅ Phase 3: Frontend Dashboard (COMPLETED)**
+- ✅ Agent Dashboard (112 agents, real-time updates)
+- ✅ Task Monitor (live feed, WebSocket)
+- ✅ Analytics Dashboard (cost metrics)
+- ✅ Sidebar navigation
 
-## Technology Stack
-
-### Backend
-- Node.js + Express
-- PostgreSQL (Neon) for persistent storage
-- WebSocket for real-time updates
-- TypeScript for type safety
-
-### AI Models
-- Claude 3.5 Sonnet (complex reasoning)
-- GPT-4o (multimodal tasks)
-- Gemini 2.5 Pro/Flash (code generation, cost optimization)
-
-### Future Frontend
-- React + TypeScript
-- Tailwind CSS + Shadcn UI
-- Real-time dashboard with agent visualization
-- Performance metrics and monitoring
-
-## Key Features
-
-### Multi-Agent Orchestration
-- 105+ specialized agents across 61 layers
-- Hierarchical organization (Agent #0 CEO → Chiefs → Coordinators → Layer Agents)
-- Task decomposition and intelligent agent assignment
-- Load balancing based on agent capacity and success rates
-- Dependency management and parallel task execution
-
-### Agent Intelligence Levels
-1. **Level 1:** Rule-Based Agents
-2. **Level 2:** Reactive Agents
-3. **Level 3:** Deliberative Agents
-4. **Level 4:** Learning Agents
-5. **Level 5:** Collaborative Agents
-6. **Level 6:** Self-Aware Agents (Agent #0)
-
-### Core Database Tables
-- `agent_capabilities` - Agent metadata, specialties, performance metrics
-- `agent_tasks` - Task queue, assignments, and execution history
-- `agent_collaboration` - Inter-agent communication messages
-- `agent_performance_metrics` - Success rates, response times, completions
-- `agent_learning_data` - Memory and pattern storage
-
-### Communication Patterns
-- **Top-Down:** CEO → Chiefs → Coordinators → Layer Agents
-- **Bottom-Up:** Layer Agents → Coordinators → Chiefs → CEO
-- **Lateral:** Peer-to-peer collaboration between same-level agents
-
-## Development Workflow
-
-1. **Reference mb.md** for all specifications
-2. **Backend-first approach** - Complete backend infrastructure before frontend
-3. **Database-driven** - PostgreSQL as source of truth for agent state
-4. **Real-time updates** - WebSocket for live agent status and task monitoring
-5. **Cost-optimized** - Multi-model routing for 87% cost reduction
-
-## Environment Variables
-
-See `.env` file for:
-- `DATABASE_URL` - PostgreSQL connection string
-- `AI_INTEGRATIONS_OPENAI_BASE_URL` - OpenAI API endpoint
-- `AI_INTEGRATIONS_OPENAI_API_KEY` - OpenAI API key
-- (Additional secrets as configured)
+**✅ Phase 4: Testing & Quality Assurance (COMPLETED)**
+- ✅ Comprehensive E2E tests (Playwright)
+- ✅ All assertions passed
 
 ## Important Files
 
-- **mb.md** - Complete AI systems documentation (3,095 lines)
-- **shared/schema.ts** - Database schemas and TypeScript types (11 tables)
-- **server/storage.ts** - Storage layer with CRUD operations for all tables
-- **server/routes.ts** - API endpoints (25+) and WebSocket setup
-- **server/seed.ts** - Agent seeding script (112 agents)
+**Documentation:** mb.md, MR_BLUE_MASTER_PLAN.md, design_guidelines.md
 
-## Implementation Status
+**Backend:** server/orchestration/task-orchestrator.ts, server/ai/model-router.ts, server/orchestration/agent-messenger.ts
 
-### ✅ Phase 1: Backend Infrastructure (COMPLETED)
-1. ✅ Create mb.md as main protocol (3,095 lines)
-2. ✅ Define database schemas for agent system (11 tables)
-3. ✅ Implement storage layer and API endpoints (25+ endpoints)
-4. ✅ Set up WebSocket server for real-time updates
-5. ✅ Seed database with 112 agents from mb.md
-6. ✅ Comprehensive validation with Zod schemas
-7. ✅ Complete testing of all API endpoints
-
-### Backend API Endpoints
-**Agent Management:**
-- `GET /api/agents` - List all agents (with pagination)
-- `GET /api/agents/:agentId` - Get agent by ID
-- `POST /api/agents` - Create new agent
-- `PATCH /api/agents/:agentId` - Update agent
-
-**Task Management:**
-- `GET /api/tasks` - List all tasks
-- `GET /api/tasks/:id` - Get task by ID
-- `POST /api/tasks` - Create new task
-- `PATCH /api/tasks/:id` - Update task
-- `POST /api/tasks/:id/assign` - Assign task to agent
-
-**Agent Collaboration:**
-- `GET /api/messages/:agentId` - Get messages for agent
-- `POST /api/messages` - Send collaboration message
-- `PATCH /api/messages/:id/read` - Mark message as read
-
-**Learning & Metrics:**
-- `GET /api/learnings/:agentId` - Get agent learnings
-- `POST /api/learnings` - Record learning
-- `GET /api/metrics/:agentId` - Get performance metrics
-- `POST /api/metrics` - Record performance metric
-
-**ML & Predictions:**
-- `POST /api/predictions` - Create prediction
-- `PATCH /api/predictions/:id/verify` - Verify prediction
-- `POST /api/behavior` - Track user behavior
-
-**Error Tracking:**
-- `POST /api/errors/actions` - Log failed action
-- `POST /api/errors/patterns` - Record failure pattern
-
-**AI Usage Tracking:**
-- `POST /api/ai-usage` - Record AI API usage
-- `GET /api/ai-usage/stats` - Get usage statistics
-
-**System Health:**
-- `GET /api/health` - System health check
-
-### WebSocket Events
-- Real-time agent status updates
-- Task notifications
-- Collaboration message broadcasts
-- Room-based subscriptions for agent-specific updates
-
-### Database Seeding
-**112 Agents Organized By:**
-- 1 Executive Agent (CEO Orchestrator)
-- 6 Division Chiefs (Foundation, Core, Business, Intelligence, Platform, Extended)
-- 9 Domain Coordinators
-- 61 Layer Agents (organized across all divisions)
-- 15 Expert Agents (UI/UX, AI Research, Data Viz, Mobile, etc.)
-- 20 Specialized Agents (Tour Guide, Subscription Manager, Vibe Coding, etc.)
-
-### ⏳ Phase 2: Frontend Dashboard (Future)
-- Agent visualization dashboard
-- Real-time task monitoring
-- Performance metrics display
-- Agent collaboration viewer
-- Admin panel for agent management
-
-## Remember
-
-> **The mb.md file is our single source of truth.**  
-> All implementation decisions must align with the specifications in mb.md.
-
-Last Updated: October 29, 2025
-
-## Running the Backend
-
-The backend is fully operational and running on port 5000.
-
-**Start the server:**
-```bash
-npm run dev
-```
-
-**Seed the database (if needed):**
-```bash
-tsx server/seed.ts
-```
-
-**Example API Calls:**
-```bash
-# Get all agents
-curl http://localhost:5000/api/agents
-
-# Get specific agent
-curl http://localhost:5000/api/agents/agent-131-vibe-coding
-
-# Create a task
-curl -X POST http://localhost:5000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"buildId":"build-123","type":"frontend","description":"Build Dashboard","assignedAgent":"agent-131-vibe-coding","priority":9,"userId":"user-1","dependencies":[]}'
-
-# Send collaboration message
-curl -X POST http://localhost:5000/api/messages \
-  -H "Content-Type: application/json" \
-  -d '{"fromAgentId":"agent-131-vibe-coding","toAgentId":"agent-79-qa","messageType":"task_handoff","payload":{"message":"Task complete"},"priority":8}'
-
-# Health check
-curl http://localhost:5000/api/health
-```
+**Frontend:** client/src/pages/AgentDashboard.tsx, TaskMonitor.tsx, Analytics.tsx, client/src/hooks/use-websocket.ts
 
 ---
 
-**Last Updated:** October 29, 2025  
-**Backend Status:** ✅ Fully Operational  
-**Agents Seeded:** 112  
-**API Endpoints:** 25+  
-**WebSocket:** Active
+**Last Updated:** October 29, 2025
+**Status:** ✅ Phases 1-4 Complete
+**Next:** Phase 5 (Deployment)
