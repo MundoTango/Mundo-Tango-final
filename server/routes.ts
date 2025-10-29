@@ -504,6 +504,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ═══════════════════════════════════════════════════════════════════
+  // MULTI-AGENT ORCHESTRATION SYSTEM
+  // Phase 2: Core orchestration endpoints
+  // ═══════════════════════════════════════════════════════════════════
+
+  const { TaskOrchestrator } = await import('./orchestration/task-orchestrator');
+  const { ModelRouter } = await import('./ai/model-router');
+  const { AgentMessenger } = await import('./orchestration/agent-messenger');
+
+  const orchestrator = new TaskOrchestrator();
+  const modelRouter = new ModelRouter();
+  const messenger = new AgentMessenger(io || undefined);
+
+  // Decompose user request into sub-tasks
+  app.post('/api/orchestration/decompose', async (req: Request, res: Response) => {
+    try {
+      const { request, userId } = req.body;
+      if (!request || !userId) {
+        return res.status(400).json({ error: 'request and userId are required' });
+      }
+
+      const decomposition = await orchestrator.decompose(request, userId);
+      res.json(decomposition);
+    } catch (error) {
+      console.error('[API] Error decomposing task:', error);
+      res.status(500).json({ error: 'Failed to decompose task' });
+    }
+  });
+
+  // Assign sub-tasks to agents
+  app.post('/api/orchestration/assign', async (req: Request, res: Response) => {
+    try {
+      const { decomposition, userId } = req.body;
+      if (!decomposition || !userId) {
+        return res.status(400).json({ error: 'decomposition and userId are required' });
+      }
+
+      const assignments = await orchestrator.assignTasks(decomposition, userId);
+      res.json(assignments);
+    } catch (error) {
+      console.error('[API] Error assigning tasks:', error);
+      res.status(500).json({ error: 'Failed to assign tasks' });
+    }
+  });
+
+  // Execute task graph in parallel
+  app.post('/api/orchestration/execute', async (req: Request, res: Response) => {
+    try {
+      const { buildId } = req.body;
+      if (!buildId) {
+        return res.status(400).json({ error: 'buildId is required' });
+      }
+
+      // Execute async (don't wait for completion)
+      orchestrator.executeParallel(buildId).catch(err => 
+        console.error('[Orchestration] Execution error:', err)
+      );
+
+      res.json({ status: 'executing', buildId });
+    } catch (error) {
+      console.error('[API] Error starting execution:', error);
+      res.status(500).json({ error: 'Failed to start execution' });
+    }
+  });
+
+  // Get orchestration status
+  app.get('/api/orchestration/status/:buildId', async (req: Request, res: Response) => {
+    try {
+      const tasks = await storage.getTasksByBuildId(req.params.buildId);
+      const stats = {
+        total: tasks.length,
+        pending: tasks.filter(t => t.status === 'pending').length,
+        in_progress: tasks.filter(t => t.status === 'in_progress').length,
+        completed: tasks.filter(t => t.status === 'completed').length,
+        failed: tasks.filter(t => t.status === 'failed').length,
+        tasks
+      };
+      res.json(stats);
+    } catch (error) {
+      console.error('[API] Error fetching orchestration status:', error);
+      res.status(500).json({ error: 'Failed to fetch status' });
+    }
+  });
+
+  // Get optimal AI model for task type
+  app.post('/api/ai/route-model', async (req: Request, res: Response) => {
+    try {
+      const { taskType, budget } = req.body;
+      if (!taskType) {
+        return res.status(400).json({ error: 'taskType is required' });
+      }
+
+      const selection = modelRouter.selectModel(taskType, budget);
+      res.json(selection);
+    } catch (error) {
+      console.error('[API] Error routing model:', error);
+      res.status(500).json({ error: 'Failed to route model' });
+    }
+  });
+
+  // Get cost savings stats
+  app.get('/api/ai/cost-savings', async (req: Request, res: Response) => {
+    try {
+      const savings = await modelRouter.calculateCostSavings();
+      res.json(savings);
+    } catch (error) {
+      console.error('[API] Error calculating cost savings:', error);
+      res.status(500).json({ error: 'Failed to calculate cost savings' });
+    }
+  });
+
+  // Get usage statistics
+  app.get('/api/ai/usage-distribution', async (req: Request, res: Response) => {
+    try {
+      const stats = await modelRouter.getUsageStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('[API] Error fetching usage stats:', error);
+      res.status(500).json({ error: 'Failed to fetch usage stats' });
+    }
+  });
+
+  // ═══════════════════════════════════════════════════════════════════
   // HEALTH CHECK
   // ═══════════════════════════════════════════════════════════════════
 

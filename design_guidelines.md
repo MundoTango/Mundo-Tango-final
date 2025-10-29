@@ -1,242 +1,322 @@
-# Mundo Tango AI Orchestration Platform - Design Guidelines
+# Mundo Tango AI Platform - Design Guidelines
 
-## Design Approach
+## Design Philosophy
 
-**Selected Approach:** Design System (Fluent Design + Custom Data Visualization)
-
-**Rationale:** Enterprise AI orchestration platform requiring robust data visualization, real-time monitoring, and complex hierarchical information architecture. Combines Fluent Design's enterprise-grade components with custom elements for agent visualization and multi-model routing displays.
+**Mission Control Aesthetic** for enterprise AI orchestration managing 112 concurrent agents.
 
 **Core Principles:**
-- Information density with clarity: Maximum data visibility without overwhelming users
-- Hierarchical visual structure: Clear visual differentiation between CEO → Chiefs → Coordinators → Agents
-- Real-time responsiveness: Immediate visual feedback for agent status changes
-- Operational efficiency: Quick access to critical controls and metrics
+- Maximum information density with instant comprehension
+- Sub-second agent state assessment via visual hierarchy
+- CEO → Chiefs → Coordinators → Agents structure always visible
+- Real-time updates without disrupting user flow
 
 ---
 
-## Typography System
+## Typography
 
-**Primary Font:** Inter (via Google Fonts CDN)
-- Display/Headers: 600-700 weight
-- Body/Interface: 400-500 weight  
-- Code/Technical: 400 weight, monospace fallback
+**Font:** Inter (Google Fonts CDN)
 
-**Type Scale:**
-- Hero/Dashboard Title: text-4xl (36px) font-semibold
-- Section Headers: text-2xl (24px) font-semibold
-- Card/Panel Titles: text-lg (18px) font-medium
-- Body Text: text-base (16px) font-normal
-- Metrics/Labels: text-sm (14px) font-medium
-- Agent IDs/Technical: text-xs (12px) font-mono
+**Scale:**
+```
+Dashboard Title: text-5xl font-bold
+Section Headers: text-2xl font-semibold
+Agent Group Headers: text-xl font-semibold
+Card Titles/Body: text-base font-medium
+Large Metrics: text-4xl font-bold
+Standard Metrics: text-lg font-semibold
+Labels: text-sm font-medium
+Agent IDs/Technical: text-xs font-mono
+Micro-labels: text-xs font-normal
+```
 
-**Hierarchy Implementation:**
-- Primary actions: font-semibold
-- Secondary labels: font-medium
-- Supporting text: font-normal
-- Maintain 1.5-1.6 line height for readability in dense layouts
+**Hierarchy:**
+- Critical data (capacity, errors, load): font-bold
+- Primary labels (headers, active tasks): font-semibold
+- Secondary info (names, timestamps): font-medium
+- Technical data (IDs, logs): font-mono
 
 ---
 
 ## Layout System
 
-**Spacing Primitives:** Tailwind units of 2, 4, 6, 8, 12, 16, 24
-- Micro spacing (between related elements): p-2, gap-2
-- Standard component padding: p-4, p-6
-- Card/panel padding: p-6, p-8
-- Section spacing: py-12, py-16
-- Major layout gaps: gap-6, gap-8
+**Spacing:** Tailwind units 1, 2, 3, 4, 6, 8
+- Status indicators/badges: gap-1, p-1
+- Metric cards/agent tiles: p-2, gap-2
+- Standard components: p-3/p-4, gap-3
+- Panels: p-4/p-6
+- Sections: py-6/py-8
 
-**Grid Structure:**
-- Dashboard grid: 12-column system (grid-cols-12)
-- Sidebar navigation: 256px fixed width
-- Main content: Fluid with max-w-7xl container
-- Card grids: 2-4 columns responsive (grid-cols-1 md:grid-cols-2 lg:grid-cols-3)
+**Grid Architecture:**
+- Header: Fixed h-14
+- Sidebar: w-72 (collapsible to w-16)
+- Main grid: 16-column system
+- Agent tiles: grid-cols-6 lg:grid-cols-8
+- Analytics: grid-cols-4
 
-**Layout Zones:**
-1. **Top Navigation Bar:** Fixed height-16, full-width, contains global controls
-2. **Left Sidebar:** Fixed w-64, contains agent hierarchy navigation
-3. **Main Dashboard:** Fluid, contains agent status grid and real-time feeds
-4. **Right Panel (optional):** w-80, agent detail view on selection
-5. **Bottom Status Bar:** Fixed height-12, system-wide metrics
+**Mission Control Zones:**
+1. **Command Bar** (h-14): Global controls, system status, emergency stop
+2. **Hierarchy Navigator** (w-72): 112-agent tree, independent scroll
+3. **Central Monitor** (flex-1): Agent grid (default) | Network graph | Heatmap
+4. **Live Feed** (w-80): Real-time activity, auto-scroll
+5. **Metrics Banner** (h-20): 6 critical KPIs, always visible
 
 ---
 
-## Component Library
+## Components
 
-### Navigation & Structure
+### Command Bar
+```
+Position: sticky top-0 z-50
+Layout: 3-zone flex
+- Left: Logo + breadcrumb (gap-4)
+- Center: Search + filters (max-w-2xl)
+- Right: Health indicators + user (gap-3)
+Backdrop: blur enabled
+```
 
-**Primary Navigation Bar:**
-- Fixed top positioning with backdrop blur
-- Logo/brand left (h-8)
-- Global search center (max-w-md)
-- User profile + system status right
-- Height: h-16, padding: px-6
+### Agent Navigator
+```
+Structure:
+- CEO (#0): pl-2, text-base font-bold
+- Chiefs (5): pl-6, text-sm font-semibold
+- Coordinators (20): pl-10, text-sm font-medium
+- Layer Agents (86): pl-14, text-xs font-normal
 
-**Hierarchical Sidebar:**
-- Collapsible tree structure for 105+ agents
-- Visual indentation: pl-4 per level (CEO → Chiefs → Coordinators → Agents)
-- Agent status indicators: Small dot icons (h-2 w-2 rounded-full)
-- Active state: Bold text + subtle background
-- Smooth expand/collapse animations (transition-all duration-200)
+Features:
+- Status dots: w-2 h-2 rounded-full mr-2
+- Icons: Heroicons chevron (h-4 w-4)
+- Active: Bold + elevated bg
+- Scroll: overflow-y-auto max-h-[calc(100vh-3.5rem)]
+```
 
-### Agent Visualization
+### Dense Agent Grid
+```html
+<div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+  <div class="min-h-24 rounded-md p-3 hover:scale-105 transition">
+    <!-- Header -->
+    <div class="flex justify-between items-start">
+      <span class="text-xs font-mono">Agent ID</span>
+      <div class="w-2 h-2 rounded-full"></div> <!-- Status -->
+    </div>
+    <!-- Name -->
+    <p class="text-sm font-medium truncate">Agent Name</p>
+    <!-- Mini metrics -->
+    <div class="flex gap-2 text-xs">
+      <span>Icon + %</span> <!-- Success rate -->
+      <span>Icon + ms</span> <!-- Response time -->
+      <span>Icon + %</span> <!-- Load -->
+    </div>
+    <!-- Progress -->
+    <div class="h-1.5 w-full rounded-full"></div>
+  </div>
+</div>
+```
 
-**Agent Status Cards:**
-- Compact cards in grid layout: min-h-32
-- Card structure:
-  - Header: Agent ID + name + status indicator
-  - Metrics row: Success rate | Response time | Current load
-  - Progress bar: Visual load indicator (0-100%)
-  - Footer: Last activity timestamp
-- Rounded corners: rounded-lg
-- Subtle borders with elevation on hover
+### Metrics Banner
+```html
+<div class="h-20 grid grid-cols-6 gap-6 px-8">
+  <div>
+    <p class="text-3xl font-bold">[Number]</p>
+    <p class="text-xs uppercase tracking-wider">[Label]</p>
+    <div class="flex items-center text-xs">
+      <span>Arrow + %</span> <!-- Trend -->
+    </div>
+    <div class="h-8 w-full">[Sparkline]</div>
+  </div>
+  <!-- Repeat 6x -->
+</div>
+```
 
-**Hierarchical Tree Visualization:**
-- SVG-based connection lines between agents
-- Node size variation by hierarchy level:
-  - CEO (Agent #0): Largest (w-16 h-16)
-  - Chiefs: Large (w-12 h-12)
-  - Coordinators: Medium (w-10 h-10)
-  - Layer Agents: Standard (w-8 h-8)
-- Expandable/collapsible branches
-- Status-based node styling (active/idle/processing)
+### Agent Detail Panel
+```
+Slide-in: w-96 h-full from right
+Tabs: Overview | Metrics | Tasks | History
+Sections (gap-4):
+- Identity: p-4 agent details
+- Live metrics: grid-cols-2 grid-rows-3
+- Task queue: max-h-64 scrollable
+- Charts: Sparklines h-16 each
+Close: absolute top-4 right-4
+```
 
-### Data Display Components
+### Activity Feed
+```html
+<div class="max-h-[calc(100vh-3.5rem)] overflow-y-auto">
+  <div class="py-2 px-3 border-l-2">
+    <span class="text-xs absolute top-2 right-2">[Time]</span>
+    <span class="text-xs font-mono px-2 py-1 rounded">[Agent]</span>
+    <p class="text-sm line-clamp-2">[Action]</p>
+    <icon class="h-4 w-4">[Status]</icon>
+  </div>
+  <!-- Auto-scroll, pause on hover -->
+</div>
+```
 
-**Metrics Dashboard:**
-- 4-column stat grid on desktop (grid-cols-4)
-- Large numbers: text-3xl font-bold
-- Metric labels: text-sm uppercase tracking-wide
-- Trend indicators: Small arrows + percentage change
-- Compact cards with px-6 py-4 padding
+### Task Assignment Modal
+```html
+<div class="max-w-3xl grid grid-cols-2 gap-6">
+  <!-- Left: Agent selector -->
+  <div>
+    <input type="search" />
+    <div class="space-y-2">
+      <!-- Agent cards with capacity bars -->
+    </div>
+  </div>
+  <!-- Right: Task form -->
+  <div class="space-y-4">
+    <div>Priority (radio horizontal)</div>
+    <div>Task type (dropdown)</div>
+    <div>Parameters (key-value pairs)</div>
+    <div>Schedule (date/time picker)</div>
+  </div>
+  <div class="col-span-2 flex justify-end gap-2">
+    <button>Cancel</button>
+    <button>Assign</button>
+  </div>
+</div>
+```
 
-**Real-Time Activity Feed:**
-- Reverse chronological list (max-h-96 overflow-y-auto)
-- Timeline-style with vertical connector lines
-- Entry structure:
-  - Timestamp (text-xs)
-  - Agent identifier (text-sm font-medium)
-  - Action description (text-sm)
-  - Status badge
-- Sticky date headers
-- Auto-scroll to new entries with notification
+### Critical Alert Modal
+```html
+<div class="max-w-2xl">
+  <icon class="h-16 w-16"></icon>
+  <h2 class="text-xl font-bold">[Alert Type]</h2>
+  <ul>[Affected Agents]</ul>
+  <p class="text-base">[Impact]</p>
+  <ul>[Recommended Actions]</ul>
+  <div class="flex gap-2">
+    <button>Emergency Stop</button>
+    <button>Investigate</button>
+    <button>Dismiss</button>
+  </div>
+</div>
+```
 
-**Agent Communication Flow:**
-- Horizontal swimlane diagram
-- Message bubbles with directional arrows
-- Color-coded by message type (task/data/status)
-- Timestamps on hover
-- Expandable message content
-
-### Forms & Controls
-
-**Agent Task Assignment:**
-- Two-column layout: Agent selector left, task details right
-- Agent dropdown with search/filter (Combobox pattern)
-- Task priority selector (Radio group)
-- Rich text area for task description
-- Submit action: Primary button, full-width on mobile
-
-**Filter Panels:**
-- Collapsible sidebar filters
-- Checkbox groups for multi-select (agent type, status, division)
-- Range sliders for numeric filters (success rate, response time)
-- Clear all + Apply buttons at bottom
-- Active filter chips above results
-
-### Modal & Overlays
-
-**Agent Detail Modal:**
-- Large centered modal (max-w-4xl)
-- Three-tab layout: Overview | Performance | History
-- Scrollable content area (max-h-96)
-- Fixed footer with action buttons
-- Backdrop blur effect
-
-**Notification Toast:**
-- Top-right positioning (fixed top-4 right-4)
-- Stack multiple toasts vertically (space-y-2)
-- Auto-dismiss after 5s with progress bar
-- Icon + message + close button
-- Slide-in animation from right
+### Toast Notifications
+```
+Position: fixed top-4 right-4 z-50
+Stack: space-y-2 vertical
+Toast: p-4 rounded-lg min-w-80
+- Icon + title (flex gap-3)
+- Message (text-sm, max 2 lines)
+- Progress bar (h-1, auto-dismiss)
+Animation: slide-in from right (duration-300)
+```
 
 ---
 
 ## Page Layouts
 
-### Main Dashboard Layout
-- Full viewport height (min-h-screen)
-- Three-column structure:
-  1. Sidebar (w-64): Agent hierarchy tree
-  2. Center (flex-1): Agent status grid + metrics
-  3. Right panel (w-80, toggleable): Selected agent details
-- Top metrics banner: Full-width, h-24
-- Activity feed: Bottom panel, h-64, collapsible
+### Main Dashboard
+```html
+<div class="h-screen overflow-hidden">
+  <!-- Top -->
+  <div class="h-14">[Command Bar]</div>
+  <div class="h-20">[Metrics Banner]</div>
+  
+  <div class="flex flex-1">
+    <!-- Left -->
+    <aside class="w-72">[Agent Navigator]</aside>
+    
+    <!-- Center -->
+    <main class="flex-1">
+      [Agent Grid | Network Graph | Heatmap]
+    </main>
+    
+    <!-- Right -->
+    <aside class="w-80">[Activity Feed]</aside>
+  </div>
+</div>
+```
 
-### Agent Orchestration View
-- Split-screen layout (50/50)
-- Left: Available agents (filterable list)
-- Right: Active tasks (Kanban board style)
-- Drag-and-drop between sections
-- Floating action button for new task (bottom-right)
+### Task Orchestration
+```html
+<div class="grid grid-cols-2 gap-4 h-full">
+  <!-- Left: Available agents -->
+  <div>
+    <input type="search" />
+    <div>[Filters]</div>
+    <div>[Draggable Agent Cards]</div>
+  </div>
+  
+  <!-- Right: Task board -->
+  <div class="grid grid-cols-3 gap-4">
+    <div>[Queued Column]</div>
+    <div>[Running Column]</div>
+    <div>[Complete Column]</div>
+  </div>
+</div>
+```
 
-### Performance Analytics Dashboard
-- Hero metrics: 4-card grid at top
-- Time-series charts: Full-width, h-80 each
-- Comparison table: Sortable, sticky header
-- Export controls: Top-right fixed position
+### Analytics Dashboard
+```html
+<div class="py-8 px-6">
+  <!-- Hero metrics -->
+  <div class="grid grid-cols-4 gap-6 mb-8">
+    <div>
+      <p class="text-5xl font-bold">[Number]</p>
+      <p>[Comparison]</p>
+      <div>[Sparkline]</div>
+    </div>
+    <!-- Repeat 4x -->
+  </div>
+  
+  <!-- Charts -->
+  <div class="space-y-8">
+    <div class="h-96">[Time-series Chart]</div>
+    <div class="grid grid-cols-2 gap-6">
+      <div>[Distribution Chart]</div>
+      <div>[Distribution Chart]</div>
+    </div>
+  </div>
+</div>
+```
 
 ---
 
-## Responsive Behavior
+## Responsive Design
 
 **Breakpoints:**
-- Mobile: < 768px - Single column, collapsible sidebar, stacked cards
-- Tablet: 768px - 1024px - Two-column grids, persistent sidebar
-- Desktop: > 1024px - Full multi-column layouts, split views
+- Mobile (<768px): Single column, bottom nav, grid-cols-2
+- Tablet (768-1024px): Collapsible sidebar, grid-cols-4
+- Desktop (>1024px): Full layout, grid-cols-8
+- Ultra-wide (>1920px): Expanded grids
 
 **Mobile Adaptations:**
-- Bottom navigation bar replaces sidebar
-- Agent cards full-width
-- Metrics stack vertically
-- Modals become full-screen slides
-
----
-
-## Interaction Patterns
-
-**Agent Selection:**
-- Click card → Highlight + show detail panel
-- Double-click → Open full modal
-- Hover → Elevate card with shadow transition
-
-**Status Updates:**
-- Real-time badge color changes (no page reload)
-- Subtle pulse animation on status change
-- Toast notification for critical events
-
-**Load Balancing Visualization:**
-- Animated progress bars showing agent capacity
-- Queue depth indicators
-- Drag-and-drop task reassignment
-
----
-
-## Images
-
-**Hero Section:** None - This is a dashboard application, not a marketing site. Lead directly with the agent status grid and metrics.
-
-**Iconography:**
-- Use Heroicons for all UI icons (outline style for secondary, solid for primary actions)
-- Agent type icons: Custom SVG badges (consistent 24x24px size)
-- Status indicators: Simple geometric shapes (dots, squares)
+- Bottom tab bar: Agent grid | Tasks | Analytics
+- Hamburger menu for hierarchy
+- Full-width agent cards
+- Metrics: grid-cols-2 grid-rows-3
+- Activity feed: Full-screen modal
 
 ---
 
 ## Accessibility
 
-- Focus indicators on all interactive elements (ring-2 ring-offset-2)
-- ARIA labels for all icons and status indicators
-- Keyboard navigation for tree views (arrow keys + enter)
-- Screen reader announcements for real-time updates
-- Sufficient contrast ratios for all text (WCAG AA minimum)
+**Focus:** `ring-2 ring-offset-1` on all interactive elements
+
+**Keyboard Navigation:**
+- Arrow keys: Tree/grid movement
+- Enter/Space: Activate
+- Escape: Close modals
+- Tab: Standard flow
+
+**ARIA:** Label all icons, status indicators, live regions
+
+**Contrast:** WCAG AA minimum
+
+**Motion:** Respect `prefers-reduced-motion`
+
+---
+
+## Icons & Visual Elements
+
+**Library:** Heroicons (outline primary, solid for active)
+
+**Sizing:**
+- Action icons: 20x20px
+- Inline metrics: 16x16px
+- Status dots: w-2 h-2
+- Agent hierarchy: Chevrons h-4 w-4
+
+**Status Shapes:** Circles, squares, triangles for agent states
